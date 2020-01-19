@@ -129,6 +129,17 @@ $(".startSearching").click(function (event) {
 
 $(".cityList").click(function (event) {
     var myValue = event.target.id;
+   var recent10History = localStorageForecastHistory[myValue];
+
+console.log(myValue);
+            //add texts to the HTML Elements 
+            $header.text(`${recent10History.city}, ${recent10History.country}`);
+            $currentTemperature.text(`Temprature: ${recent10History.currentTemperature}°F`);
+            $currentHumidity.text(`Humidity: ${recent10History.currentHumidity}%`);
+            $currentWindspeed.text(`Wind Speed: ${recent10History.currentWindspeed}MPH`);
+            $currentUvindexSpan.text('9.49');
+
+          //  create5DayForecastElements([recent10History]);
 })
 
 
@@ -151,13 +162,14 @@ function getForecastDataFromAPI(searchParam1) {
 
         //add texts to the HTML Elements 
         $header.text(`${locationRecord.name}, ${locationRecord.country}`);
-        $currentTemperature.text(`Temprature: ${climateRecord[0].main.temp}°F`);
+        $currentTemperature.text('Temprature: '+ convertKelvinToFahrenheit(climateRecord[0].main.temp).toFixed() +'°F');
         $currentHumidity.text(`Humidity: ${climateRecord[0].main.humidity}%`);
         $currentWindspeed.text(`Wind Speed: ${climateRecord[0].wind.speed}MPH`);
         $currentUvindexSpan.text('9.49');
 
         // array to save the average forecast temprature for 5days - API returns 5day forecast for every 3hr - calculation is performed to calculate the average for the day
         var forecastHistory = [];
+     
         var dailyForecast = {};
         var count = 0;
         var temperature = 0;
@@ -168,8 +180,9 @@ function getForecastDataFromAPI(searchParam1) {
 
         //calculate average weather for each day from the 8 data points divided in 3hr interval
         for (let i = 0; i < climateRecord.length; i++) {
+            
             if (count < 8) {
-                temperature += climateRecord[i].main.temp;
+                temperature += convertKelvinToFahrenheit(climateRecord[i].main.temp);
                 humidity += climateRecord[i].main.humidity;
                 windspeed += climateRecord[i].wind.speed;
                 uvindec = 9.99;
@@ -181,13 +194,13 @@ function getForecastDataFromAPI(searchParam1) {
                     dailyForecast.country = locationRecord.country,
                     dailyForecast.date = climateRecord.dt_txt,
                     dailyForecast.dateNum = climateRecord.dt,
-                    dailyForecast.currentTemperature = climateRecord[i].main.temp;
+                    dailyForecast.currentTemperature = convertKelvinToFahrenheit(climateRecord[i].main.temp);
                 dailyForecast.currentHumidity = climateRecord[i].main.humidity;
                 dailyForecast.currentWindspeed = climateRecord[i].wind.speed;
                 dailyForecast.currentUvindex = 9.99;
                 //add daily forecast data with key day1, day2, ......
                 dailyForecast[`day${index}`] = {
-                    "averageTemperature": (temperature / count).toFixed(2),
+                    "averageTemperature": (temperature / count).toFixed(),
                     "averageHumidity": (humidity / count).toFixed(2),
                     "averageWindspeed": (windspeed / count).toFixed(2),
                     "uvindec": uvindec,
@@ -213,32 +226,13 @@ function getForecastDataFromAPI(searchParam1) {
                 localStorageForecastHistory.push(dailyForecast);
                 localStorage.setItem("forecastHistory", JSON.stringify(localStorageForecastHistory));
             }
-        }
-
-        //5day  
-        for (let j = 1; j < 5; j++) {
-            var day = `day${j}`;
-
-            var forecastForDay = localStorageForecastHistory[localStorageForecastHistory.length - 1][day];
-
-            var $foreCastSingleBox = $("<div>");
-            $foreCastSingleBox.addClass("col-sm-2 foreCastBoxes m-2");
-            $foreCastBoxs.append($foreCastSingleBox);
-
-            //create elements to hold text content within the div boxes
-            var $foreCastDate = $("<p>");
-            var $forecastTemperature = $("<p>");
-            var $forecastHumidity = $("<p>");
-
-            //forecast date
-            $foreCastSingleBox.append($foreCastDate);
-            $foreCastDate.text(forecastForDay.dt_txt);
-            //forecast temprature
-            $foreCastSingleBox.append($forecastTemperature);
-            $forecastTemperature.text(`Temprature: ${forecastForDay.averageTemperature}`);
-            //forecast temprature
-            $foreCastSingleBox.append($forecastHumidity);
-            $forecastHumidity.text(`Humidity: ${forecastForDay.averageHumidity}%`);
+            localStorageForecastHistory = JSON.parse(localStorage.getItem("forecastHistory"));
+            create5DayForecastElements(localStorageForecastHistory);
+        } else 
+        if(searchParam1.includes("lat=")){
+            forecastHistory.push(dailyForecast);
+            console.log("forecastHistory = "+JSON.stringify(forecastHistory))
+           create5DayForecastElements(forecastHistory);
         }
 
     })
@@ -246,17 +240,58 @@ function getForecastDataFromAPI(searchParam1) {
 
 // update UI with Existing data is data is available on local storage
 //localStorage after update
-localStorageForecastHistory = JSON.parse(localStorage.getItem("forecastHistory"));
-if (localStorageForecastHistory !== null) {
+//localStorageForecastHistory = JSON.parse(localStorage.getItem("forecastHistory"));
+createCitySearchHistoryList(localStorageForecastHistory)
 
-    var localStorageForecastHistoryLength = localStorageForecastHistory.length;
-    for (var i = localStorageForecastHistoryLength - 1; i > (localStorageForecastHistoryLength - 11); i--) {
-        // add text to page - left City List  
-        var cityList = $("<button>");
-        cityList.addClass("border borderColor p-2 text-center  btn-block  bg-light cityListContainer ");
-        cityList.attr("id", `${i}`);
-        cityList.text(localStorageForecastHistory[i].city);
-        $col_1_row_2.append(cityList)
-    }
+//create City Search History List
+function createCitySearchHistoryList(localStorageForecastHistory){
+    if (localStorageForecastHistory !== null) {
+        var localStorageForecastHistoryLength = localStorageForecastHistory.length;
+        for (var i = localStorageForecastHistoryLength - 1; i > (localStorageForecastHistoryLength - 11); i--) {
+            // add text to page - left City List  
+            var cityList = $("<button>");
+            cityList.addClass("border borderColor p-2 text-center  btn-block  bg-light cityListContainer ");
+            cityList.attr("id", `${i}`);
+            cityList.text(localStorageForecastHistory[i].city);
+            $col_1_row_2.append(cityList)
+        }
+    }  
+}
+console.log("localStorageForecastHistory = "+localStorageForecastHistory.length);
+// create 5Day Forecast Elements
+function create5DayForecastElements(localStorageForecastHistory){
+    // remove existing elements under the container
+    $(".foreCastBoxes").remove();
+            //5day  
+            for (let j = 1; j < 5; j++) {
+                var day = `day${j}`;
 
+                var numbRec = localStorageForecastHistory.length - 1;
+                var forecastForDay = localStorageForecastHistory[numbRec][day];
+    
+                var $foreCastSingleBox = $("<div>");
+                $foreCastSingleBox.addClass("col-sm-2 foreCastBoxes m-2");
+                $foreCastBoxs.append($foreCastSingleBox);
+    
+                //create elements to hold text content within the div boxes
+                var $foreCastDate = $("<p>");
+                var $forecastTemperature = $("<p>");
+                var $forecastHumidity = $("<p>");
+    
+                //forecast date
+                $foreCastSingleBox.append($foreCastDate);
+                $foreCastDate.text(forecastForDay.dt_txt);
+                //forecast temprature
+                $foreCastSingleBox.append($forecastTemperature);
+                $forecastTemperature.text(`Temprature: ${forecastForDay.averageTemperature}°F`);
+                //forecast temprature
+                $foreCastSingleBox.append($forecastHumidity);
+                $forecastHumidity.text(`Humidity: ${forecastForDay.averageHumidity}%`);
+            }
+}
+
+
+function convertKelvinToFahrenheit(kelvinTemp){
+   var fahrenheitTemp = ((kelvinTemp-273.15)*1.8)+32;
+   return fahrenheitTemp;
 }

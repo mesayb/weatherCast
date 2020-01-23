@@ -8,5 +8,14 @@
 }
 
 .borderColor {
-    border-color:  #f5f8fa;
+    border-color: #f5f8fa;
+}
+
+ body {
+    background-image: url("../images/worldMap.png")
+} 
+
+.col-sm-4 img {
+    width:300px;
+    height:200px;
 }

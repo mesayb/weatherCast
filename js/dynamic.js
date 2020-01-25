@@ -25,7 +25,7 @@ var localStorageForecastHistory = JSON.parse(localStorage.getItem("forecastHisto
 //under 2nd-for(5day forecast) - create 5 columns
 
 //capture content container
-var $container = $(".container");
+var $container = $(".data_container");
 
 //create a row
 var $row = $("<div>");
@@ -107,7 +107,7 @@ $col_2_row_1.append($col_2_row_1_col_1);
 
 //create elements needed for holding icon on current temp 
 var $col_2_row_1_col_2 = $("<div>");
-$col_2_row_1_col_2.addClass("col-sm-5");
+$col_2_row_1_col_2.addClass("col-sm-5 circle");
 var $imageIconHead = $("<img>");
 $col_2_row_1_col_2.append($imageIconHead);
 $col_2_row_1.append($col_2_row_1_col_2);

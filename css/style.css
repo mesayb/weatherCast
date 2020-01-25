@@ -13,6 +13,8 @@
 
  body {
     background-image: url("../images/worldMap.png");
+    background-size: cover;
+    background-repeat: no-repeat;
     font-family: 'Yanone Kaffeesatz', serif;
 } 
 

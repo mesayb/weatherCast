@@ -110,6 +110,8 @@ var $col_2_row_1_col_2 = $("<div>");
 $col_2_row_1_col_2.addClass("col-sm-5 circle");
 var $imageIconHead = $("<img>");
 $col_2_row_1_col_2.append($imageIconHead);
+var $imageDecription = $("<h2>");
+$col_2_row_1_col_2.append($imageDecription);
 $col_2_row_1.append($col_2_row_1_col_2);
 
 //add labels to the elements
@@ -155,6 +157,7 @@ $(".cityList").click(function (event) {
     $currentTemperature.text(`Temprature: ${currentTemp}°F`);
     var icon = `http://openweathermap.org/img/wn/${recent10History.currentWeatherIcon}@2x.png`;
     $imageIconHead.attr('src', icon)
+    $imageDecription.text(`${recent10History.imageDescription}`)
     $currentHumidity.text(`Humidity: ${recent10History.currentHumidity}%`);
     $currentWindspeed.text(`Wind Speed: ${recent10History.currentWindspeed}MPH`);
 
@@ -183,6 +186,7 @@ function getForecastDataFromAPI(searchParam1) {
         //add texts to the HTML Elements 
         var icon = `http://openweathermap.org/img/wn/${climateRecord[0].weather[0].icon}@2x.png`;
         $imageIconHead.attr('src', icon)
+        $imageDecription.text(`${climateRecord[0].weather[0].description}`)
         $header.text(`${locationRecord.name}, ${locationRecord.country} (${climateRecord[0].dt_txt.slice(0,10)})`);
         $currentTemperature.text('Temprature: ' + convertKelvinToFahrenheit(climateRecord[0].main.temp).toFixed() + '°F');
         $currentHumidity.text(`Humidity: ${climateRecord[0].main.humidity}%`);
@@ -220,6 +224,7 @@ function getForecastDataFromAPI(searchParam1) {
                 dailyForecast.currentWindspeed = climateRecord[i].wind.speed;
                 dailyForecast.currentUvindex = 9.99;
                 dailyForecast.currentWeatherIcon = climateRecord[0].weather[0].icon
+                dailyForecast.imageDescription = climateRecord[0].weather[0].description
 
                 //add daily forecast data with key day1, day2, ......
                 dailyForecast[`day${index}`] = {

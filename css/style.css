@@ -26,10 +26,11 @@ body {
 }
 
 .circle {
-    width: 200px;
+    width: 100px;
     height: 200px;
-    background: rgb(13, 110, 255);
-    border-radius: 50%
+    background: rgb(17, 55, 131);
+    /* border-radius: 25%; */
+    opacity: initial
 }
 
 .foreCastBoxes {

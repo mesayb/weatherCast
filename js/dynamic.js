@@ -54,7 +54,7 @@ $divSearchContainer.append($inputBox);
 
 // create a search button
 var $searchButton = $("<div>");
-$searchButton.addClass("fas fa-search btn-lg btn-primary  startSearching");
+$searchButton.addClass("fas fa-search btn btn-primary  startSearching");
 $divSearchContainer.append($searchButton);
 //append contents
 $col_1_row_1.append($divSearchContainer);

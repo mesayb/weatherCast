@@ -77,7 +77,7 @@ $col_1_row_2.append($searchLabel)
 //under the 2nd column - create 2 rows  1st-for(current weather display) 2nd-for(5day forecast)
 //create containers needed
 var $col_2 = $("<div>");
-$col_2.addClass("col-sm-9  border borderColor");
+$col_2.addClass("col-sm-9   borderColor");
 $row.append($col_2);
 
 // 1st column-for(current weather display)

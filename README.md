@@ -17,4 +17,4 @@ This is a weather forecast App - that displays current tempratue, humidity and W
 - jQuery
 - open weather map API -> http://openweathermap.org
 - getCurrentPosition - to get users current position
-
+- jenkins
